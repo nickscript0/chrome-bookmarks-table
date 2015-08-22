@@ -1,0 +1,20 @@
+table {
+    font: 100% "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
+
+    width: 100% !important;
+    /* position: relative; */
+
+    table-layout: fixed;
+}
+
+.datatable td {
+    overflow: hidden;
+}
+
+.odd {
+    background-color: rgb(243, 244, 247) !important;
+}
+
+tr.odd td.sorting_1  {
+    background-color: rgb(234, 235, 253) !important;
+}
