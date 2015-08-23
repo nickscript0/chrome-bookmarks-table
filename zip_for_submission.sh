@@ -1,1 +1,1 @@
-zip -r --exclude=*.svn* bookmarks_table_ext_v0.5.zip *.html *.js *.css *.json *.png icons datatables jquery-ui-1.10.3.custom
+zip -r --exclude=*.git* bookmarks_table_ext_v$1.zip icons ext src main.html manifest.json
