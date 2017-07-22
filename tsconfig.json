@@ -11,7 +11,10 @@
         "target": "es5",
         "module": "commonjs",
         "sourceMap": true,
-        "jsx": "react"   
+        "jsx": "react",
+        "types": [
+            "chrome"
+        ]
     },
     "compileOnSave": false,
     "exclude": [

@@ -1,11 +1,16 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-import {Hello, Table} from './components/BookmarksTable';
+import {Hello, Table, nodeListToRows} from './components/BookmarksTable';
 
 console.log('hello worlds');
 
-ReactDOM.render(
-    <Table />,
-    document.getElementById("example")
-);
+chrome.bookmarks.getTree(bookmarks => {
+    const rows = nodeListToRows(bookmarks[0]);
+    ReactDOM.render(
+        <Table data={rows}/>,
+        document.getElementById("example")
+    );
+});
+
+

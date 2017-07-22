@@ -1,0 +1,6 @@
+.ReactTable {
+  display: block;
+}
+.-pagination {
+    height: 50px;
+}
