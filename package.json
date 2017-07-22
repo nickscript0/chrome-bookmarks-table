@@ -25,6 +25,7 @@
     "react-dom": "^15.6.1"
   },
   "devDependencies": {
+    "react-table": "^6.5.1",
     "ts-loader": "^2.3.1",
     "typescript": "^2.4.2",
     "webpack": "^3.3.0"
