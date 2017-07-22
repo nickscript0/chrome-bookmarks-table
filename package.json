@@ -1,0 +1,26 @@
+{
+  "name": "chrome-bookmarks-table",
+  "version": "1.0.0",
+  "description": "A Chrome Extension ([available on the chrome web store](https://chrome.google.com/webstore/detail/bookmarks-table/eaabmhkokgaboihbikohlooneokghmcp)) that displays your bookmarks by date in a sortable searchable table",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "webpack --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nickscript0/chrome-bookmarks-table.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nickscript0/chrome-bookmarks-table/issues"
+  },
+  "homepage": "https://github.com/nickscript0/chrome-bookmarks-table#readme",
+  "devDependencies": {
+    "ts-loader": "^2.3.1",
+    "typescript": "^2.4.2",
+    "webpack": "^3.3.0"
+  }
+}
