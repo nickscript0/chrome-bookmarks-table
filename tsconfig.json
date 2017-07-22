@@ -1,16 +1,17 @@
 {
     "compilerOptions": {
         // Vue.js recommended
-        "allowSyntheticDefaultImports": true,
-        "lib": [
-            "dom",
-            "es5",
-            "es2015.promise"
-        ],
+        // "allowSyntheticDefaultImports": true,
+        // "lib": [
+        //     "dom",
+        //     "es5",
+        //     "es2015.promise"
+        // ],
         // Webpack.js recommended
         "target": "es5",
         "module": "commonjs",
-        "sourceMap": true        
+        "sourceMap": true,
+        "jsx": "react"   
     },
     "compileOnSave": false,
     "exclude": [
