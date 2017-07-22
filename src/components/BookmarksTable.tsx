@@ -12,14 +12,18 @@ export class Hello2 extends React.Component<HelloProps, undefined> {
     }
 }
 
+const DEFAULT_MIN_WIDTH = 40;
+
 const columns = [
     {
         Header: 'Title',
-        accessor: 'title'
+        accessor: 'title',
+        minWidth: 80
     },
     {
         Header: 'URL',
         accessor: 'url',
+        minWidth: DEFAULT_MIN_WIDTH,
         Cell: row => {
             const l = document.createElement("a");
             l.href = row.value;
@@ -28,14 +32,21 @@ const columns = [
     },
     {
         Header: 'Path',
+        minWidth: DEFAULT_MIN_WIDTH,
         accessor: 'path'
     },
     {
         Header: 'Date Added',
-        accessor: 'date'
+        minWidth: DEFAULT_MIN_WIDTH,
+        accessor: 'date',
+        Cell: row => {
+            const m = moment.unix(row.value / 1000);
+            return m.format("MMMM DD, YYYY h:mm:ss a");
+        }
     },
     {
         Header: 'Relative',
+        minWidth: 20,
         accessor: 'relativeDate'
     }
 ];
@@ -50,6 +61,10 @@ export class Table extends React.Component<TableProps, any> {
         return <ReactTable
             data={this.props.data}
             columns={columns}
+            sorted={[{
+                id: 'date',
+                desc: true
+            }]}
         />
     }
 }
@@ -66,8 +81,8 @@ class Bookmark {
         this.url = url;
         this.path = path;
 
+        this.date = date;
         const m = moment.unix(date / 1000);
-        this.date = m.format("MMMM DD, YYYY h:mm:ss a");
         this.relativeDate = m.fromNow();
     }
 }
