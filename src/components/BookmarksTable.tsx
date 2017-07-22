@@ -19,7 +19,12 @@ const columns = [
     },
     {
         Header: 'URL',
-        accessor: 'url'
+        accessor: 'url',
+        Cell: row => {
+            const l = document.createElement("a");
+            l.href = row.value;
+            return (<a href={row.value} target="_blank">{l.hostname}</a>);
+        }
     },
     {
         Header: 'Path',
@@ -58,18 +63,12 @@ class Bookmark {
 
     constructor(title, url, path, date) {
         this.title = title;
-        this.url = this.buildHostnameLink(url || '');
+        this.url = url;
         this.path = path;
 
         const m = moment.unix(date / 1000);
         this.date = m.format("MMMM DD, YYYY h:mm:ss a");
         this.relativeDate = m.fromNow();
-    }
-
-    buildHostnameLink(url) {
-        var l = document.createElement("a");
-        l.href = url;
-        return '<a href="' + url + '" target="_blank">' + l.hostname + '</a>';
     }
 }
 
