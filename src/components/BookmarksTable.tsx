@@ -1,6 +1,7 @@
 import * as React from "react";
 import ReactTable from 'react-table';
 import * as moment from 'moment';
+import * as matchSorter from 'match-sorter';
 
 export interface HelloProps { compiler: string; framework: string; }
 
@@ -18,7 +19,10 @@ const columns = [
     {
         Header: 'Title',
         accessor: 'title',
-        minWidth: 80
+        minWidth: 80,
+        filterMethod: (filter, rows) =>
+            matchSorter(rows, filter.value, { keys: ['title', 'url', 'path'] }),
+        filterAll: true
     },
     {
         Header: 'URL',
@@ -47,7 +51,8 @@ const columns = [
     {
         Header: 'Relative',
         minWidth: 20,
-        accessor: 'relativeDate'
+        accessor: 'relativeDate',
+        filterable: false
     }
 ];
 
@@ -65,6 +70,7 @@ export class Table extends React.Component<TableProps, any> {
                 id: 'date',
                 desc: true
             }]}
+            filterable={true}
         />
     }
 }
