@@ -66,7 +66,7 @@ export class Table extends React.Component<TableProps, any> {
         return <ReactTable
             data={this.props.data}
             columns={columns}
-            sorted={[{
+            defaultSorted={[{
                 id: 'date',
                 desc: true
             }]}
