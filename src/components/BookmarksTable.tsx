@@ -20,8 +20,6 @@ const columns = [
         Header: 'Title',
         accessor: 'title',
         minWidth: 80,
-        filterMethod: (filter, rows) =>
-            matchSorter(rows, filter.value, { keys: ['title', 'url', 'path'] }),
         filterAll: true
     },
     {
@@ -32,12 +30,14 @@ const columns = [
             const l = document.createElement("a");
             l.href = row.value;
             return (<a href={row.value} target="_blank">{l.hostname}</a>);
-        }
+        },
+        filterAll: true
     },
     {
         Header: 'Path',
         minWidth: DEFAULT_MIN_WIDTH,
-        accessor: 'path'
+        accessor: 'path',
+        filterAll: true
     },
     {
         Header: 'Date Added',
@@ -46,7 +46,14 @@ const columns = [
         Cell: row => {
             const m = moment.unix(row.value / 1000);
             return m.format("MMMM DD, YYYY h:mm:ss a");
-        }
+        },
+        // Override default filter as date is stored as milliseconds since epoch
+        filterMethod: (filter, rows) => {
+            const lookup = item => moment.unix(item.date / 1000).format("MMMM DD, YYYY h:mm:ss a");
+            return matchSorter(rows, filter.value,
+                { keys: [lookup], threshold: matchSorter.rankings.ACRONYM });
+        },
+        filterAll: true
     },
     {
         Header: 'Relative',
@@ -62,6 +69,8 @@ export interface TableProps { data: Bookmark[] }
 
 export class Table extends React.Component<TableProps, any> {
     render() {
+        const defaultFilterFunc = (filter, rows) =>
+            matchSorter(rows, filter.value, { keys: [filter.id], threshold: matchSorter.rankings.ACRONYM });
 
         return <ReactTable
             data={this.props.data}
@@ -71,6 +80,7 @@ export class Table extends React.Component<TableProps, any> {
                 desc: true
             }]}
             filterable={true}
+            defaultFilterMethod={defaultFilterFunc}
         />
     }
 }
