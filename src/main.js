@@ -1,3 +1,5 @@
+dayjs.extend(window.dayjs_plugin_relativeTime);
+
 function main() {
   chrome.bookmarks.getTree(function(bookmarks) {
     loadDatatable(nodeListToRows(bookmarks[0]));
@@ -17,7 +19,7 @@ function nodeListToRows(bookmarks) {
   for (var i = 0; i < node_list.length; i++) {
     b = node_list[i];
     var url = b.hasOwnProperty('url') ? b.url : '';
-    var m = moment.unix(b.dateAdded / 1000);
+    var m = dayjs(b.dateAdded);
     var date_added = m.format("MMMM DD, YYYY h:mm:ss a");
     output.push([b.title, buildHostnameLink(url), b.path, date_added, m.fromNow()]);
   }
