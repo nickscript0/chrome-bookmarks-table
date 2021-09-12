@@ -20,7 +20,8 @@ const columns = [
         Header: 'Title',
         accessor: 'title',
         minWidth: 80,
-        filterAll: true
+        filterAll: true,
+        style: {'flexWrap': 'wrap'}
     },
     {
         Header: 'URL',
