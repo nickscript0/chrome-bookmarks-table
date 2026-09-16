@@ -18,3 +18,15 @@ table {
 tr.odd td.sorting_1  {
     background-color: rgb(234, 235, 253) !important;
 }
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  :root { color-scheme: dark; }
+  body, tr.even, .ui-widget-header { background: #1E1E1E; color: #D4D4D4; }
+  .ui-widget-header { border-color: #1E1E1E; }
+  tr.odd { background: #2A2D2E !important; }
+  #collection td[class*="sorting_"] { background: rgba(255, 255, 255, 0.05) !important; }
+  #collection, #collection th, #collection td { border: 1px solid #474747; }
+  #collection th { background: #333333; color: #D4D4D4; }
+  .dataTables_filter input { background: #3C3C3C; color: #D4D4D4; border-color: #474747; }
+}
