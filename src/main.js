@@ -6,10 +6,28 @@ function main() {
   });
 }
 
+function escapeHTML(text) {
+  var span = document.createElement("span");
+  span.textContent = text;
+  return span.innerHTML;
+}
+
 function buildHostnameLink(url) {
-  var l = document.createElement("a");
-  l.href = url;
-  return '<a href="' + url + '" target="_blank">' + l.hostname + '</a>';
+  var link = document.createElement("a");
+  try {
+    var parsed = new URL(url);
+    // Bookmarklets and other executable or unknown schemes stay plain text.
+    if (!/^(https?|ftp|file|chrome|chrome-extension|about):$/.test(parsed.protocol)) {
+      return escapeHTML(url);
+    }
+    link.href = parsed.href;
+  } catch (_error) {
+    return escapeHTML(url);
+  }
+  link.textContent = link.hostname || url;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  return link.outerHTML;
 }
 
 // Convert a bookmarks.getTree response to a DataTables input array
@@ -17,11 +35,11 @@ function nodeListToRows(bookmarks) {
   var node_list = flattenBTNodes(bookmarks, '');
   var output = [];
   for (var i = 0; i < node_list.length; i++) {
-    b = node_list[i];
+    var b = node_list[i];
     var url = b.hasOwnProperty('url') ? b.url : '';
     var m = dayjs(b.dateAdded);
     var date_added = m.format("MMMM DD, YYYY h:mm:ss a");
-    output.push([b.title, buildHostnameLink(url), b.path, date_added, m.fromNow()]);
+    output.push([escapeHTML(b.title), buildHostnameLink(url), escapeHTML(b.path), date_added, m.fromNow()]);
   }
   return output;
 }

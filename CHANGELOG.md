@@ -1,4 +1,16 @@
 # Changelog
+## [v0.8] - 2026-10-23
+
+### Added
+- Dark mode that follows the browser's preferred color scheme, with readable link colors.
+- Privacy policy describing local bookmark processing.
+- Repository homepage link in Chrome's extension details.
+
+### Fixed
+- Display bookmark titles and folder paths as text to prevent HTML injection.
+- Construct bookmark links safely and display bookmarklets, data URLs, and unsupported URL schemes as non-clickable text.
+- Correct npm license metadata to match the project's MIT License.
+
 ## [v0.7] - 2021-09-12
 
 ### Added

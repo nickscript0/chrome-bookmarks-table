@@ -28,5 +28,7 @@ tr.odd td.sorting_1  {
   #collection td[class*="sorting_"] { background: rgba(255, 255, 255, 0.05) !important; }
   #collection, #collection th, #collection td { border: 1px solid #474747; }
   #collection th { background: #333333; color: #D4D4D4; }
+  #collection a:link { color: #9CDCFE; }
+  #collection a:visited { color: #C586C0; }
   .dataTables_filter input { background: #3C3C3C; color: #D4D4D4; border-color: #474747; }
 }
