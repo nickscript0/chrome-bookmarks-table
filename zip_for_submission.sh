@@ -8,4 +8,4 @@ if [ -e "$archive" ]; then
     exit 1
 fi
 
-zip -r "$archive" icons ext src main.html manifest.json -x '*.git*' '*.DS_Store'
+zip -r "$archive" icons src main.html manifest.json -x '*.git*' '*.DS_Store'

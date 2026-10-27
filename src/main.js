@@ -1,94 +1,116 @@
-dayjs.extend(window.dayjs_plugin_relativeTime);
+import { buildBookmarkRows, filterRows, sortRows, updateSorting } from "./bookmarks.js";
 
-function main() {
-  chrome.bookmarks.getTree(function(bookmarks) {
-    loadDatatable(nodeListToRows(bookmarks[0]));
+const search = document.querySelector("#search");
+const body = document.querySelector("#bookmark-rows");
+const emptyRow = document.querySelector("#empty-row");
+const count = document.querySelector("#result-count");
+const errorMessage = document.querySelector("#error-message");
+const buttons = [...document.querySelectorAll("button[data-column]")];
+
+let rows = [];
+let sorting = [{ column: "dateAdded", direction: "desc" }];
+const rowElements = new Map();
+
+function createRow(bookmark) {
+  const row = document.createElement("tr");
+  for (const value of [bookmark.title, bookmark.urlLabel, bookmark.path,
+    bookmark.dateLabel, bookmark.relativeLabel]) {
+    const cell = document.createElement("td");
+    cell.textContent = value;
+    row.append(cell);
+  }
+  if (bookmark.href !== null) {
+    const link = document.createElement("a");
+    link.href = bookmark.href;
+    link.textContent = bookmark.urlLabel;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    row.cells[1].replaceChildren(link);
+  }
+  return row;
+}
+
+function updateHeaders() {
+  for (const button of buttons) {
+    const { column, label } = button.dataset;
+    const priority = sorting.findIndex((sort) => sort.column === column);
+    const sort = sorting[priority];
+    const header = button.closest("th");
+    header.removeAttribute("aria-sort");
+    if (priority === 0) {
+      header.setAttribute("aria-sort", sort.direction === "asc" ? "ascending" : "descending");
+    }
+    const indicator = button.querySelector(".sort-indicator");
+    indicator.dataset.direction = sort?.direction || "none";
+    indicator.textContent = sort && sorting.length > 1 ? String(priority + 1) : "";
+    const state = sort
+      ? `${sort.direction === "asc" ? "ascending" : "descending"}, sort priority ${priority + 1}`
+      : "not sorted";
+    const nextDirection = sorting.length === 1 && sort?.direction === "asc" ? "descending" : "ascending";
+    const shiftAction = !sort ? "add ascending sorting"
+      : sort.direction === "asc" ? "sort descending" : "remove this sort";
+    const description = `${label}, ${state}. Click to sort ${nextDirection} by this column only. Shift-click to ${shiftAction}.`;
+    button.setAttribute("aria-label", description);
+    button.title = description;
+  }
+}
+
+function render() {
+  const visible = sortRows(filterRows(rows, search.value), sorting);
+  const fragment = document.createDocumentFragment();
+  const primaryColumn = buttons.findIndex((button) => button.dataset.column === sorting[0]?.column);
+  for (const bookmark of visible) {
+    const row = rowElements.get(bookmark.index);
+    for (let index = 0; index < row.cells.length; index++) {
+      row.cells[index].classList.toggle("sorted-column", index === primaryColumn);
+    }
+    fragment.append(row);
+  }
+  if (visible.length === 0) {
+    emptyRow.cells[0].textContent = rows.length === 0 ? "No bookmarks available." : "No matching bookmarks found.";
+    fragment.append(emptyRow);
+  }
+  body.replaceChildren(fragment);
+  count.textContent = `Showing ${visible.length.toLocaleString("en")} of ${rows.length.toLocaleString("en")} bookmarks`;
+  updateHeaders();
+}
+
+function showError(error) {
+  body.replaceChildren();
+  count.textContent = "Bookmarks could not be loaded.";
+  errorMessage.textContent = `Could not load bookmarks. ${error.message || "Please try reopening this tab."}`;
+  errorMessage.hidden = false;
+}
+
+search.addEventListener("input", render);
+for (const button of buttons) {
+  button.addEventListener("click", (event) => {
+    sorting = updateSorting(sorting, button.dataset.column, event.shiftKey);
+    render();
   });
 }
 
-function escapeHTML(text) {
-  var span = document.createElement("span");
-  span.textContent = text;
-  return span.innerHTML;
-}
-
-function buildHostnameLink(url) {
-  var link = document.createElement("a");
-  try {
-    var parsed = new URL(url);
-    // Bookmarklets and other executable or unknown schemes stay plain text.
-    if (!/^(https?|ftp|file|chrome|chrome-extension|about):$/.test(parsed.protocol)) {
-      return escapeHTML(url);
+updateHeaders();
+try {
+  chrome.bookmarks.getTree((tree) => {
+    const error = chrome.runtime.lastError;
+    if (error) {
+      showError(error);
+      return;
     }
-    link.href = parsed.href;
-  } catch (_error) {
-    return escapeHTML(url);
-  }
-  link.textContent = link.hostname || url;
-  link.target = "_blank";
-  link.rel = "noopener noreferrer";
-  return link.outerHTML;
-}
-
-// Convert a bookmarks.getTree response to a DataTables input array
-function nodeListToRows(bookmarks) {
-  var node_list = flattenBTNodes(bookmarks, '');
-  var output = [];
-  for (var i = 0; i < node_list.length; i++) {
-    var b = node_list[i];
-    var url = b.hasOwnProperty('url') ? b.url : '';
-    var m = dayjs(b.dateAdded);
-    var date_added = m.format("MMMM DD, YYYY h:mm:ss a");
-    output.push([escapeHTML(b.title), buildHostnameLink(url), escapeHTML(b.path), date_added, m.fromNow()]);
-  }
-  return output;
-}
-
-// Walks through a tree of BookmarkNodes, returning a flattened array of all the nodes
-// Throws out folder nodes
-function flattenBTNodes(node, path) {
-  node.path = path;
-  var output = [];
-  if (node.hasOwnProperty('children')) {
-    for (var i = 0; i < node.children.length; i++) {
-      var cur_path = path === '' ? node.title : path + '/' + node.title; // Parent nodes are directories so add them to the path
-      output.push.apply(output, flattenBTNodes(node.children[i], cur_path));
+    try {
+      rows = buildBookmarkRows(tree);
+      for (const bookmark of rows) {
+        rowElements.set(bookmark.index, createRow(bookmark));
+      }
+      render();
+      search.disabled = false;
+      for (const button of buttons) button.disabled = false;
+      search.focus();
+    } catch (error) {
+      showError(error);
     }
-  } else {
-    output = [node];
-  }
-  return output;
-}
-
-// PROBLEM: unbroken text (e.g. search for pdf) extends the table past 100%
-
-// load datatable with Collection data
-function loadDatatable(aDataSet) {
-  $("div#collection_div").html('<table cellpadding="0" cellspacing="0" border="1" class="display" id="collection"></table>');
-  $("table#collection").dataTable({
-    "bJQueryUI": true,
-    "aaData": aDataSet,
-    "aaSorting": [
-      [3, 'desc']
-    ],
-    "aoColumns": [{
-      "sTitle": "Title"
-    }, {
-      "sTitle": "URL"
-    }, {
-      "sTitle": "Path"
-    }, {
-      "sTitle": "Date Added",
-      "sType": "date"
-    }, {
-      "sTitle": "Relative",
-      "bSortable": false,
-      "sWidth": "80px"
-    }],
-    "bPaginate": false,
-    "bAutoWidth": false
   });
-  $('div.dataTables_filter input').focus(); // Default focus to search field
+} catch (error) {
+  showError(error);
 }
-
-main();

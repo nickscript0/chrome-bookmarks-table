@@ -5,10 +5,29 @@ A Chrome Extension ([available on the chrome web store](https://chrome.google.co
 
 See the [privacy policy](PRIVACY.md) for how bookmark data is processed locally.
 
+## Development
+
+The extension uses native browser APIs with no third-party dependencies, package
+installation, compilation, or build step. Load this folder as an unpacked extension
+from `chrome://extensions` with Developer mode enabled.
+
+Run the unit tests with Node.js 22 or newer:
+
+```bash
+npm test
+```
+
+Search matches every whitespace-separated term across the displayed columns,
+ignoring case and term order. Click a column header to sort; Shift-click to add
+another column, reverse its direction, or remove it from the sorting order.
+
+Dates use English labels in your local timezone. Relative dates are calculated
+when the tab loads, with elapsed 24-hour days, 30-day months, and 365-day years.
+
 ## Publishing a release
 
 The extension runs directly from the checked-in files; no compilation or npm
-install is needed for a release that keeps the existing dependencies.
+install is needed.
 
 1. Update `manifest.json` to a version higher than the published store version and
    add the release notes to `CHANGELOG.md`. The version in `package.json` is not
@@ -37,19 +56,3 @@ install is needed for a release that keeps the existing dependencies.
 
 The ZIP filename does not change the version in `manifest.json`. Always create a
 new archive instead of updating an existing ZIP, which can retain deleted files.
-
-## Updating dependencies separately
-
-The bundled DataTables 1.9.4 is maintained manually and is not covered by npm audit.
-The commands below only refresh jQuery and Day.js. A DataTables upgrade needs its
-own compatibility testing.
-
-```bash
-# Update packages
-npm install
-
-# Copy the minimal deps to ext/ so we don't have to bundle node_modules
-cp node_modules/jquery/dist/jquery.min.js ext/
-cp node_modules/dayjs/dayjs.min.js ext/
-cp node_modules/dayjs/plugin/relativeTime.js ext/
-```

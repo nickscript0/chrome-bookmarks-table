@@ -1,4 +1,15 @@
 # Changelog
+## [Unreleased]
+
+### Changed
+- Replace jQuery, DataTables, Day.js, and vendor styles/assets with native browser APIs and local CSS.
+- Preserve the original font size, table spacing and alignment, shaded toolbar/column headers, and sort arrow appearance using CSS.
+- Use numeric English relative-date labels and sort dates directly by bookmark timestamps.
+- Add accessible sorting controls, explicit loading/error/empty states, and compact overflow handling for long bookmark text.
+
+### Added
+- Dependency-free unit tests for bookmark transformation, URL safety, search, sorting, and date formatting.
+
 ## [v0.8] - 2026-10-23
 
 ### Added

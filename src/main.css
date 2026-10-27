@@ -1,34 +1,136 @@
+:root {
+  color-scheme: light;
+  color: #222;
+  background: #fff;
+  --border: #aaa;
+  --header: #e6e6e6;
+  --header-text: #555;
+  --toolbar-color: #ccc;
+  --toolbar-background: linear-gradient(to bottom, #e3e3e3 35px, #ccc 58px);
+  --column-background: linear-gradient(to bottom, #eee 200px, #e6e6e6 200px, #f1f1f1 214px);
+  --stripe: #f3f4f7;
+  --sorted: #eaeafd;
+  --focus: #245bb2;
+}
+
+body { margin: 8px; }
+.toolbar {
+  margin: 0;
+  padding: 5px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  /* Match the original centered 100px toolbar texture with a CSS gradient. */
+  background: var(--toolbar-background) center / 100% 100px repeat-x var(--toolbar-color);
+}
+div.toolbar { display: flex; justify-content: flex-end; }
+label { display: flex; align-items: center; gap: 6px; max-width: 100%; }
+input { min-width: 0; width: 220px; max-width: 100%; }
+input:focus-visible, button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 table {
-    font: 100% "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
-
-    width: 100% !important;
-    /* position: relative; */
-
-    table-layout: fixed;
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font: 100% "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
+}
+.relative-column { width: 96px; }
+th, td { padding: 3px 10px; border: 1px solid var(--border); vertical-align: middle; }
+/* Keep normal word wrapping, but clip long tokens instead of forcing tall rows. */
+td { overflow: hidden; }
+th {
+  padding: 0;
+  text-align: center;
+  color: var(--header-text);
+  /* The hard stop supplies the original glass highlight at the midpoint. */
+  background: var(--column-background) center / 100% 400px repeat-x var(--header);
+}
+th:last-child { padding: 3px 0 3px 10px; }
+th button {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 3px 20px 3px 10px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: bold;
+  text-align: center;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+button:disabled { cursor: default; }
+.sort-indicator {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  min-width: 16px;
+  height: 16px;
+  padding-left: 16px;
+  box-sizing: border-box;
+  transform: translateY(-50%);
+  color: #888;
+  font-size: 11px;
+  line-height: 16px;
+  white-space: nowrap;
+}
+.sort-indicator:not(:empty) { padding-right: 2px; }
+.sort-indicator::before, .sort-indicator::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  background: currentColor;
+}
+/* Recreate the original small paired chevrons and filled sorting triangles. */
+.sort-indicator::before {
+  clip-path: polygon(5px 7px, 8.5px 2.5px, 12px 7px, 10px 7px, 8.5px 5px, 7px 7px);
+}
+.sort-indicator::after {
+  clip-path: polygon(5px 9px, 7px 9px, 8.5px 11px, 10px 9px, 12px 9px, 8.5px 13.5px);
+}
+.sort-indicator[data-direction="asc"]::before {
+  clip-path: polygon(4px 10px, 7.5px 5.5px, 11px 10px);
+}
+.sort-indicator[data-direction="desc"]::after {
+  clip-path: polygon(5px 6px, 12px 6px, 8.5px 10.5px);
+}
+.sort-indicator[data-direction="asc"]::after,
+.sort-indicator[data-direction="desc"]::before { display: none; }
+tbody tr:nth-child(odd) { background: var(--stripe); }
+tbody tr:nth-child(odd) .sorted-column { background: var(--sorted); }
+#empty-row td { text-align: center; padding: 16px; }
+#error-message { color: #a11919; }
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
-.datatable td {
-    overflow: hidden;
-}
-
-.odd {
-    background-color: rgb(243, 244, 247) !important;
-}
-
-tr.odd td.sorting_1  {
-    background-color: rgb(234, 235, 253) !important;
-}
-
-/* Dark Mode */
 @media (prefers-color-scheme: dark) {
-  :root { color-scheme: dark; }
-  body, tr.even, .ui-widget-header { background: #1E1E1E; color: #D4D4D4; }
-  .ui-widget-header { border-color: #1E1E1E; }
-  tr.odd { background: #2A2D2E !important; }
-  #collection td[class*="sorting_"] { background: rgba(255, 255, 255, 0.05) !important; }
-  #collection, #collection th, #collection td { border: 1px solid #474747; }
-  #collection th { background: #333333; color: #D4D4D4; }
-  #collection a:link { color: #9CDCFE; }
-  #collection a:visited { color: #C586C0; }
-  .dataTables_filter input { background: #3C3C3C; color: #D4D4D4; border-color: #474747; }
+  :root {
+    color-scheme: dark;
+    color: #d4d4d4;
+    background: #1e1e1e;
+    --border: #474747;
+    --header: #333;
+    --header-text: #d4d4d4;
+    --toolbar-color: #1e1e1e;
+    --toolbar-background: none;
+    --column-background: none;
+    --stripe: #2a2d2e;
+    --sorted: #36383c;
+    --focus: #9cdcfe;
+  }
+  input { background: #3c3c3c; color: #d4d4d4; border: 1px solid var(--border); }
+  a:link { color: #9cdcfe; }
+  a:visited { color: #c586c0; }
+  #error-message { color: #ffb4b4; }
 }

@@ -1,25 +1,37 @@
-<html>
-
+<!doctype html>
+<html lang="en">
 <head>
-  <script src="ext/jquery.min.js"></script>
-  <script src="ext/datatables/js/jquery.dataTables.min.js"></script>
-  <script src="ext/dayjs.min.js"></script>
-  <script src="ext/relativeTime.js"></script>
-  <script src="src/main.js"></script>
-  <style type="text/css" title="currentStyle">
-    @import "ext/datatables/css/demo_table.css";
-    @import "ext/datatables/css/demo_table_jui.css";
-    @import "ext/jquery-ui-1.10.3.custom/css/smoothness/jquery-ui-1.10.3.custom.min.css";
-  </style>
-  <link type='text/css' href='src/main.css' rel='stylesheet'>
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Bookmarks</title>
+  <link href="src/main.css" rel="stylesheet">
+  <script type="module" src="src/main.js"></script>
 </head>
-
 <body>
-  <div id="collection_div" />
-
-  <pre id="console" />
+  <main>
+    <div class="toolbar">
+      <label for="search">Search: <input id="search" type="search" autocomplete="off" disabled></label>
+    </div>
+    <p id="error-message" role="alert" hidden></p>
+    <p id="sort-help" class="visually-hidden">Activate a column button to sort. Hold Shift while activating to sort by multiple columns. Sort priorities appear beside the arrows.</p>
+    <table id="collection" aria-describedby="sort-help result-count">
+      <caption class="visually-hidden">Bookmarks</caption>
+      <colgroup>
+        <col class="title-column"><col class="url-column"><col class="path-column">
+        <col class="date-column"><col class="relative-column">
+      </colgroup>
+      <thead>
+        <tr>
+          <th scope="col"><button type="button" data-column="title" data-label="Title" disabled>Title <span class="sort-indicator" aria-hidden="true"></span></button></th>
+          <th scope="col"><button type="button" data-column="url" data-label="URL" disabled>URL <span class="sort-indicator" aria-hidden="true"></span></button></th>
+          <th scope="col"><button type="button" data-column="path" data-label="Path" disabled>Path <span class="sort-indicator" aria-hidden="true"></span></button></th>
+          <th scope="col"><button type="button" data-column="dateAdded" data-label="Date Added" disabled>Date Added <span class="sort-indicator" aria-hidden="true"></span></button></th>
+          <th scope="col">Relative</th>
+        </tr>
+      </thead>
+      <tbody id="bookmark-rows"><tr id="empty-row"><td colspan="5">Loading bookmarks…</td></tr></tbody>
+    </table>
+    <p id="result-count" class="toolbar" role="status" aria-live="polite">Loading bookmarks…</p>
+  </main>
 </body>
-
 </html>
