@@ -71,7 +71,11 @@ function render() {
     fragment.append(emptyRow);
   }
   body.replaceChildren(fragment);
-  count.textContent = `Showing ${visible.length.toLocaleString("en")} of ${rows.length.toLocaleString("en")} bookmarks`;
+  const displayed = visible.length.toLocaleString("en");
+  count.textContent = `Showing ${visible.length === 0 ? 0 : 1} to ${displayed} of ${displayed} entries`;
+  if (visible.length !== rows.length) {
+    count.textContent += ` (filtered from ${rows.length.toLocaleString("en")} total entries)`;
+  }
   updateHeaders();
 }
 
