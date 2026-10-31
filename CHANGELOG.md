@@ -2,6 +2,7 @@
 ## [Unreleased]
 
 ### Changed
+- Match legacy stable sorting and numeric/date column detection, sorted-column colors, empty states, search control, borders, column widths, and footer layout without dependencies.
 - Replace jQuery, DataTables, Day.js, and vendor styles/assets with native browser APIs and local CSS.
 - Preserve the original font size, table spacing and alignment, shaded toolbar/column headers, and sort arrow appearance using CSS.
 - Restore the original footer report, including entry ranges, filtered totals, and empty results.

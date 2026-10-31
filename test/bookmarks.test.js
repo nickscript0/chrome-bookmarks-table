@@ -146,7 +146,7 @@ test("sort timestamps directly with stable ties and unavailable dates last in bo
   assert.deepEqual(rows.map((row) => row.index), [0, 1, 2, 3, 4]);
 });
 
-test("combine case-insensitive lexical sorts and retain tree order for final ties", () => {
+test("combine case-insensitive sorts and retain input order for final ties", () => {
   const rows = buildBookmarkRows([
     bookmark("beta", now), bookmark("alpha", now - day),
     bookmark("Alpha", now), bookmark("ALPHA", now),
@@ -156,6 +156,34 @@ test("combine case-insensitive lexical sorts and retain tree order for final tie
   ]).map((row) => row.index), [2, 3, 1, 0]);
   assert.deepEqual(sortRows(rows, [{ column: "title", direction: "desc" }]).map((row) => row.index), [0, 1, 2, 3]);
   assert.deepEqual(sortRows(rows, []).map((row) => row.index), [0, 1, 2, 3]);
+});
+
+test("ties preserve previous sorts, including after filtering and removing the last sort", () => {
+  const rows = buildBookmarkRows([
+    bookmark("Shared", now - day), bookmark("Shared", now), bookmark("Other", now - 2 * day),
+  ], now);
+  const newest = sortRows(rows, [{ column: "dateAdded", direction: "desc" }]);
+  const titled = sortRows(newest, [{ column: "title", direction: "asc" }]);
+  assert.deepEqual(titled.map(row => row.index), [2, 1, 0]);
+  assert.deepEqual(filterRows(titled, "shared").map(row => row.index), [1, 0]);
+  assert.deepEqual(sortRows(titled, []), titled);
+});
+
+test("infer legacy numeric/date types and retain escaped-text punctuation order", () => {
+  for (const [titles, expected] of [
+    [["10", "2", "100", "1"], ["1", "2", "10", "100"]],
+    [["March 01, 2024", "January 01, 2024", "February 01, 2024"], ["January 01, 2024", "February 01, 2024", "March 01, 2024"]],
+    [["/ path", "<literal>", "& ampersand", "! bang"], ["! bang", "& ampersand", "<literal>", "/ path"]],
+  ]) {
+    const rows = buildBookmarkRows(titles.map(title => bookmark(title)), now);
+    assert.deepEqual(sortRows(rows, [{ column: "title", direction: "asc" }]).map(row => row.title), expected);
+    assert.deepEqual(sortRows(rows, [{ column: "title", direction: "desc" }]).map(row => row.title), [...expected].reverse());
+  }
+  const mixed = buildBookmarkRows([bookmark("10"), bookmark("2"), bookmark("Text")], now);
+  assert.deepEqual(sortRows(mixed, [{ column: "title", direction: "asc" }]).map(row => row.title), ["10", "2", "Text"]);
+  const blanks = buildBookmarkRows(["10", "", "2", "-"].map(title => bookmark(title)), now);
+  assert.deepEqual(sortRows(blanks, [{ column: "title", direction: "asc" }]).map(row => row.title), ["", "-", "2", "10"]);
+  assert.deepEqual(sortRows(blanks, [{ column: "title", direction: "desc" }]).map(row => row.title), ["10", "2", "", "-"]);
 });
 
 test("sort URLs by their displayed labels and paths by literal text", () => {

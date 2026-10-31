@@ -1,43 +1,51 @@
 :root {
   color-scheme: light;
-  color: #222;
+  color: #000;
   background: #fff;
   --border: #aaa;
   --header: #e6e6e6;
   --header-text: #555;
   --toolbar-color: #ccc;
+  --toolbar-text: #222;
   --toolbar-background: linear-gradient(to bottom, #e3e3e3 35px, #ccc 58px);
   --column-background: linear-gradient(to bottom, #eee 200px, #e6e6e6 200px, #f1f1f1 214px);
   --stripe: #f3f4f7;
-  --sorted: #eaeafd;
+  --sorted: #eaebfd;
+  --cell-border: #000;
+  --heading-border: #d3d3d3;
   --focus: #245bb2;
 }
 
 body { margin: 8px; }
 .toolbar {
+  color: var(--toolbar-text);
   margin: 0;
   padding: 5px;
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: 4px 4px 0 0;
   /* Match the original centered 100px toolbar texture with a CSS gradient. */
   background: var(--toolbar-background) center / 100% 100px repeat-x var(--toolbar-color);
 }
-div.toolbar { display: flex; justify-content: flex-end; }
-label { display: flex; align-items: center; gap: 6px; max-width: 100%; }
-input { min-width: 0; width: 220px; max-width: 100%; }
+.toolbar::after { content: ""; display: table; clear: both; }
+.filter-control { width: 50%; float: right; text-align: right; }
+.footer-toolbar { border-radius: 0 0 4px 4px; }
+#result-count { margin: 0; width: 50%; float: left; padding-top: 3px; }
 input:focus-visible, button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 table {
+  border: 1px outset #000;
   width: 100%;
   table-layout: fixed;
   border-collapse: collapse;
   font: 100% "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
 }
-.relative-column { width: 96px; }
-th, td { padding: 3px 10px; border: 1px solid var(--border); vertical-align: middle; }
+.relative-column { width: 91px; }
+th, td { padding: 3px 10px; border: 1px inset var(--cell-border); vertical-align: middle; }
 /* Keep normal word wrapping, but clip long tokens instead of forcing tall rows. */
 td { overflow: hidden; }
 th {
   padding: 0;
+  border: 1px solid var(--heading-border);
+  border-bottom-color: #000;
   text-align: center;
   color: var(--header-text);
   /* The hard stop supplies the original glass highlight at the midpoint. */
@@ -54,9 +62,9 @@ th button {
   color: inherit;
   font: inherit;
   font-weight: bold;
+  line-height: 1.25;
   text-align: center;
   cursor: pointer;
-  overflow-wrap: anywhere;
 }
 button:disabled { cursor: default; }
 .sort-indicator {
@@ -99,8 +107,13 @@ button:disabled { cursor: default; }
 .sort-indicator[data-direction="asc"]::after,
 .sort-indicator[data-direction="desc"]::before { display: none; }
 tbody tr:nth-child(odd) { background: var(--stripe); }
-tbody tr:nth-child(odd) .sorted-column { background: var(--sorted); }
-#empty-row td { text-align: center; padding: 16px; }
+tbody tr:nth-child(odd) [data-sort-priority="1"] { background: var(--sorted); }
+tbody tr:nth-child(odd) [data-sort-priority="2"] { background: #dadcff; }
+tbody tr:nth-child(odd) [data-sort-priority="3"] { background: #e0e2ff; }
+tbody tr:nth-child(even) [data-sort-priority="1"] { background: #eaebff; }
+tbody tr:nth-child(even) [data-sort-priority="2"] { background: #f2f3ff; }
+tbody tr:nth-child(even) [data-sort-priority="3"] { background: #f9f9ff; }
+#empty-row td { text-align: center; }
 #error-message { color: #a11919; }
 .visually-hidden {
   position: absolute;
@@ -119,17 +132,22 @@ tbody tr:nth-child(odd) .sorted-column { background: var(--sorted); }
     color-scheme: dark;
     color: #d4d4d4;
     background: #1e1e1e;
-    --border: #474747;
+    --border: #1e1e1e;
+    --cell-border: #474747;
+    --heading-border: #474747;
     --header: #333;
     --header-text: #d4d4d4;
     --toolbar-color: #1e1e1e;
+    --toolbar-text: #d4d4d4;
     --toolbar-background: none;
     --column-background: none;
     --stripe: #2a2d2e;
     --sorted: #36383c;
     --focus: #9cdcfe;
   }
-  input { background: #3c3c3c; color: #d4d4d4; border: 1px solid var(--border); }
+  tbody tr:nth-child(n) [data-sort-priority]:not([data-sort-priority=""]) { background: rgba(255, 255, 255, 0.05); }
+  input { background: #3c3c3c; color: #d4d4d4; border-color: #474747; }
+  table, th, td { border: 1px solid #474747; }
   a:link { color: #9cdcfe; }
   a:visited { color: #c586c0; }
   #error-message { color: #ffb4b4; }

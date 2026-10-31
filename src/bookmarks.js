@@ -68,6 +68,19 @@ export function buildBookmarkRows(tree, now = Date.now()) {
       });
     }
   }
+  // DataTables inferred a single type for each column, using escaped display text.
+  const escape = value => value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  for (const column of ["title", "url", "path"]) {
+    const values = rows.map(row => escape(column === "url" ? row.urlLabel : row[column]));
+    const linked = column === "url" && rows.some(row => row.href !== null);
+    const numeric = !linked && values.every(value => /^(?:[\d-][\d.]*)?$/.test(value) && (value.match(/\./g) || []).length <= 1);
+    const date = !linked && !numeric && values.every(value => value === "" || Number.isFinite(Date.parse(value)));
+    rows.forEach((row, index) => {
+      const value = values[index];
+      row.sortValues[column] = numeric ? (value === "-" ? 0 : Number(value))
+        : date ? (value === "" ? 0 : Date.parse(value)) : value.toLowerCase();
+    });
+  }
   return rows;
 }
 
@@ -88,7 +101,8 @@ export function sortRows(rows, sorting) {
       const comparison = a < b ? -1 : a > b ? 1 : 0;
       if (comparison !== 0) return direction === "desc" ? -comparison : comparison;
     }
-    return left.index - right.index;
+    // Stable sort retains the previous display order, including when no sorts remain.
+    return 0;
   });
 }
 

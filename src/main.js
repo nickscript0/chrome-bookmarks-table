@@ -42,7 +42,7 @@ function updateHeaders() {
     }
     const indicator = button.querySelector(".sort-indicator");
     indicator.dataset.direction = sort?.direction || "none";
-    indicator.textContent = sort && sorting.length > 1 ? String(priority + 1) : "";
+    indicator.textContent = "";
     const state = sort
       ? `${sort.direction === "asc" ? "ascending" : "descending"}, sort priority ${priority + 1}`
       : "not sorted";
@@ -51,23 +51,24 @@ function updateHeaders() {
       : sort.direction === "asc" ? "sort descending" : "remove this sort";
     const description = `${label}, ${state}. Click to sort ${nextDirection} by this column only. Shift-click to ${shiftAction}.`;
     button.setAttribute("aria-label", description);
-    button.title = description;
+
   }
 }
 
 function render() {
-  const visible = sortRows(filterRows(rows, search.value), sorting);
+  const visible = filterRows(rows, search.value);
   const fragment = document.createDocumentFragment();
-  const primaryColumn = buttons.findIndex((button) => button.dataset.column === sorting[0]?.column);
+  const columnPriorities = buttons.map(button => sorting.findIndex(sort => sort.column === button.dataset.column) + 1);
   for (const bookmark of visible) {
     const row = rowElements.get(bookmark.index);
     for (let index = 0; index < row.cells.length; index++) {
-      row.cells[index].classList.toggle("sorted-column", index === primaryColumn);
+      const priority = columnPriorities[index] || 0;
+      row.cells[index].dataset.sortPriority = priority ? String(Math.min(priority, 3)) : "";
     }
     fragment.append(row);
   }
   if (visible.length === 0) {
-    emptyRow.cells[0].textContent = rows.length === 0 ? "No bookmarks available." : "No matching bookmarks found.";
+    emptyRow.cells[0].textContent = rows.length === 0 ? "No data available in table" : "No matching records found";
     fragment.append(emptyRow);
   }
   body.replaceChildren(fragment);
@@ -90,6 +91,7 @@ search.addEventListener("input", render);
 for (const button of buttons) {
   button.addEventListener("click", (event) => {
     sorting = updateSorting(sorting, button.dataset.column, event.shiftKey);
+    rows = sortRows(rows, sorting);
     render();
   });
 }
@@ -103,7 +105,7 @@ try {
       return;
     }
     try {
-      rows = buildBookmarkRows(tree);
+      rows = sortRows(buildBookmarkRows(tree), sorting);
       for (const bookmark of rows) {
         rowElements.set(bookmark.index, createRow(bookmark));
       }

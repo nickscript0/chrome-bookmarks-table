@@ -10,12 +10,11 @@
 <body>
   <main>
     <div class="toolbar">
-      <label for="search">Search: <input id="search" type="search" autocomplete="off" disabled></label>
+      <div class="filter-control"><label for="search">Search: <input id="search" type="text" autocomplete="off" disabled></label></div>
     </div>
     <p id="error-message" role="alert" hidden></p>
-    <p id="sort-help" class="visually-hidden">Activate a column button to sort. Hold Shift while activating to sort by multiple columns. Sort priorities appear beside the arrows.</p>
-    <table id="collection" aria-describedby="sort-help result-count">
-      <caption class="visually-hidden">Bookmarks</caption>
+    <p id="sort-help" class="visually-hidden">Activate a column button to sort. Hold Shift while activating to sort by multiple columns. Sort priorities are announced by the column buttons.</p>
+    <table id="collection" aria-label="Bookmarks" aria-describedby="sort-help result-count">
       <colgroup>
         <col class="title-column"><col class="url-column"><col class="path-column">
         <col class="date-column"><col class="relative-column">
@@ -31,7 +30,7 @@
       </thead>
       <tbody id="bookmark-rows"><tr id="empty-row"><td colspan="5">Loading bookmarks…</td></tr></tbody>
     </table>
-    <p id="result-count" class="toolbar" role="status" aria-live="polite">Loading bookmarks…</p>
+    <div class="toolbar footer-toolbar"><p id="result-count" role="status" aria-live="polite">Loading bookmarks…</p></div>
   </main>
 </body>
 </html>
